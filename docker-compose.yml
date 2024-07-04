@@ -1,0 +1,37 @@
+# docker-compose.yml
+
+version: '3.8'
+
+services:
+  image_management:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./api:/app/api
+      - ./streamlit_app:/app/streamlit_app
+      - ./utils:/app/utils
+    depends_on:
+      - db
+    networks:
+      - image_management_net
+
+  db:
+    image: postgres:latest
+    container_name: image_manage-postgres
+    environment:
+      POSTGRES_USER: image_user
+      POSTGRES_PASSWORD: image_password
+      POSTGRES_DB: image_db
+    ports:
+      - "5432:5432"
+    networks:
+      - image_management_net
+
+networks:
+  image_management_net:
+    driver: bridge
